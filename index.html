@@ -444,12 +444,26 @@ class Component extends DCLogic {
   brand() { return this.state.brands[this.state.bi]; }
   product() { const b = this.brand(); return b && b.products[Math.min(this.state.pi, b.products.length - 1)]; }
   src(p) { return p ? this.state.base + p.image : null; }
+  thumbSrc(p) { return p ? "public/thumbs/" + p.image : null; }
 
   pushLayer() {
     const src = this.src(this.product());
     if (!src) return;
     this.setState(s => ({ layers: [...s.layers.map(l => ({ ...l, out: true })), { src, key: src + "#" + Date.now() }] }));
     this._t.push(setTimeout(() => this.setState(s => ({ layers: s.layers.slice(-1) })), 700));
+    this.prefetch();
+  }
+
+  // Warm the neighbouring slides (and the next brand's first image) so fast
+  // rail/rack scrolling never waits on the network for an already-decoded size.
+  prefetch() {
+    const b = this.brand();
+    if (b) [this.state.pi + 1, this.state.pi - 1].forEach(i => {
+      const p = b.products[i];
+      if (p) { const im = new Image(); im.src = this.src(p); }
+    });
+    const nb = this.state.brands[this.state.bi + 1];
+    if (nb && nb.products[0]) { const im = new Image(); im.src = this.src(nb.products[0]); }
   }
 
   // Click and arrow keys drive the same scroll — selection still comes from
@@ -505,10 +519,10 @@ class Component extends DCLogic {
     this._t.push(setTimeout(() => clearInterval(this._words), 3800));
   }
 
-  media(src, fit, radius) {
+  media(src, fit, radius, lazy) {
     if (!src || this.state.failed[src]) return React.createElement("div", { style: { width: "100%", height: "100%", background: "#2a2a2a", borderRadius: radius } });
     return React.createElement("img", {
-      src, alt: "", draggable: false,
+      src, alt: "", draggable: false, decoding: "async", loading: lazy ? "lazy" : "eager",
       onLoad: e => {
         const t = e.target, r = t.naturalWidth + " / " + t.naturalHeight;
         if (!t.naturalWidth || this.state.ratios[src] === r) return;
@@ -535,7 +549,7 @@ class Component extends DCLogic {
     }));
 
     const thumbs = (b ? b.products : []).map((p, i) => ({
-      media: this.media(this.src(p), "cover", 8),
+      media: this.media(this.thumbSrc(p), "cover", 8, true),
       onClick: () => this.setProduct(i)
     }));
 

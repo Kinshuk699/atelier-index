@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atelier Index</title>
+<!-- Local build: runtime dependencies served from ./vendor/ (no CDN, works offline). -->
+<script>
+  window.__resources = {
+    "https://unpkg.com/react@18.3.1/umd/react.production.min.js": "./vendor/react.production.min.js",
+    "https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js": "./vendor/react-dom.production.min.js",
+    "https://unpkg.com/@babel/standalone@7.29.0/babel.min.js": "./vendor/babel.min.js"
+  };
+</script>
+<script src="./vendor/react.production.min.js"></script>
+<script src="./vendor/react-dom.production.min.js"></script>
+<!-- Brand index as a classic script (avoids the module-import CORS block on file://). -->
+<script src="./brands-data.global.js"></script>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="./vendor/fonts.css" />
+<style>
+  html, body { height: 100%; overflow: hidden; margin: 0; background: #0a0a0a; }
+  body { font-family: Inter, system-ui, sans-serif; color: #f5f5f5; -webkit-font-smoothing: antialiased; }
+  a { color: #888888; text-decoration: none; }
+  a:hover { color: #f5f5f5; }
+  #rack::-webkit-scrollbar, #rail::-webkit-scrollbar { display: none; }
+  @keyframes dcIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+  @keyframes dcOut { from { opacity: 1; } to { opacity: 0; } }
+  @keyframes wordIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+  @keyframes ambA { 0% { transform: translate3d(-9vw,-7vh,0) scale(1); } 50% { transform: translate3d(11vw,9vh,0) scale(1.28); } 100% { transform: translate3d(-9vw,-7vh,0) scale(1); } }
+  @keyframes ambB { 0% { transform: translate3d(13vw,11vh,0) scale(1.14); } 50% { transform: translate3d(-7vw,-11vh,0) scale(0.92); } 100% { transform: translate3d(13vw,11vh,0) scale(1.14); } }
+  @keyframes ambC { 0% { transform: translate3d(-5vw,13vh,0) scale(1.06); } 50% { transform: translate3d(9vw,-9vh,0) scale(1.34); } 100% { transform: translate3d(-5vw,13vh,0) scale(1.06); } }
+  @keyframes ambD { 0% { transform: translate3d(6vw,-12vh,0) scale(1.2); } 50% { transform: translate3d(-10vw,6vh,0) scale(1); } 100% { transform: translate3d(6vw,-12vh,0) scale(1.2); } }
+  @media (prefers-reduced-motion: reduce) {
+    [data-amb] > div { animation: none !important; }
+  }
+</style>
+</helmet>
+<div style="height:100vh;width:100vw;display:flex;flex-direction:column;overflow:hidden;background:#0a0a0a">
+
+  <div data-amb="" aria-hidden="true" style="position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:#0a0a0a">
+    <div style="position:absolute;top:50%;left:50%;width:70vw;height:70vw;margin:-35vw 0 0 -35vw;border-radius:50%;background:radial-gradient(circle at 50% 50%, #560008 0%, rgba(86,0,8,0.45) 45%, rgba(86,0,8,0) 72%);filter:blur(90px);opacity:0.24;animation:ambA 26s ease-in-out infinite;will-change:transform"></div>
+    <div style="position:absolute;top:50%;left:50%;width:52vw;height:52vw;margin:-26vw 0 0 -26vw;border-radius:50%;background:radial-gradient(circle at 50% 50%, #ce956d 0%, rgba(206,149,109,0.32) 45%, rgba(206,149,109,0) 72%);filter:blur(100px);opacity:0.26;animation:ambB 34s ease-in-out infinite;will-change:transform"></div>
+    <div style="position:absolute;top:50%;left:50%;width:60vw;height:60vw;margin:-30vw 0 0 -30vw;border-radius:50%;background:radial-gradient(circle at 50% 50%, #560008 0%, rgba(86,0,8,0.4) 48%, rgba(86,0,8,0) 74%);filter:blur(110px);opacity:0.18;animation:ambC 22s ease-in-out infinite;will-change:transform"></div>
+    <div style="position:absolute;top:50%;left:50%;width:44vw;height:44vw;margin:-22vw 0 0 -22vw;border-radius:50%;background:radial-gradient(circle at 50% 50%, #ce956d 0%, rgba(206,149,109,0.28) 45%, rgba(206,149,109,0) 70%);filter:blur(90px);opacity:0.2;animation:ambD 30s ease-in-out infinite;will-change:transform"></div>
+  </div>
+
+  <header style="position:relative;z-index:1;height:56px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-bottom:1px solid #232323;background:rgba(10,10,10,0.72);backdrop-filter:blur(14px)">
+    <span style="font-size:13px;letter-spacing:0.2em;text-transform:uppercase;font-weight:500">Atelier Index</span>
+    <span style="font-family:Anton,sans-serif;font-style:italic;font-size:12px;color:#888888;letter-spacing:0.04em">{{ curationLine }}</span>
+  </header>
+
+  <main style="position:relative;z-index:1;flex:1;min-height:0;display:flex">
+
+    <nav id="rail" ref="{{ railRef }}" tabIndex="0" style="width:240px;flex:none;background:rgba(20,20,20,0.82);backdrop-filter:blur(14px);border-right:1px solid #232323;display:flex;flex-direction:column;padding:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;scroll-snap-type:y mandatory;overscroll-behavior:contain;outline:none">
+      <div style="flex:none;height:calc(50% - 21px)"></div>
+      <sc-for list="{{ rows }}" as="b" hint-placeholder-count="8">
+        <div data-row="" onClick="{{ b.onClick }}" onMouseEnter="{{ b.onEnter }}" onMouseLeave="{{ b.onLeave }}" style="flex:none;display:flex;align-items:center;gap:10px;padding:9px 18px 9px 0;cursor:pointer;position:relative;scroll-snap-align:center;transform-origin:14% 50%;will-change:transform,opacity">
+          <div style="width:3px;align-self:stretch;background:{{ b.bar }}"></div>
+          <span style="font-size:11px;font-variant-numeric:tabular-nums;color:{{ b.dim }};min-width:20px">{{ b.index }}</span>
+          <span style="font-family:Anton,sans-serif;text-transform:uppercase;letter-spacing:0.06em;font-size:15px;color:{{ b.ink }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.name }}</span>
+          <span style="font-size:11px;color:{{ b.dim }};margin-left:auto;font-variant-numeric:tabular-nums">({{ b.count }})</span>
+        </div>
+      </sc-for>
+      <sc-if value="{{ isEmpty }}" hint-placeholder-val="{{ false }}">
+        <div style="padding:0 18px;font-family:ui-monospace,monospace;font-size:11px;color:#888888;line-height:1.7">no brand folders found in /public/brands/</div>
+      </sc-if>
+      <div style="flex:none;height:calc(50% - 21px)"></div>
+    </nav>
+
+    <section style="flex:1;min-width:0;display:flex;flex-direction:column">
+
+      <div style="flex:1;min-height:0;position:relative;background:transparent;overflow:hidden;display:flex;align-items:stretch;padding:10px 40px 14px;gap:24px">
+        <div style="flex:none;width:min(248px,34%)" aria-hidden="true"></div>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none">
+          <span style="font-family:Anton,sans-serif;font-size:40vh;line-height:0.8;color:transparent;-webkit-text-stroke:2px #f5f5f5;opacity:0.06">{{ activeIndex }}</span>
+        </div>
+        <div style="flex:1;min-width:0;min-height:0;position:relative">{{ imageStack }}</div>
+        <div style="flex:none;width:min(248px,34%);display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:16px">
+          <span style="font-family:Anton,sans-serif;font-size:clamp(19px,2.2vw,32px);line-height:1.05;letter-spacing:0.03em;text-transform:uppercase;text-wrap:balance">{{ activeLabel }}</span>
+        </div>
+      </div>
+
+      <div id="rack" ref="{{ rackRef }}" onMouseDown="{{ onDragStart }}" tabIndex="0" style="height:128px;box-sizing:border-box;flex:none;display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;padding:16px 0;border-top:1px solid #232323;background:rgba(10,10,10,0.55);scrollbar-width:none;align-items:center;outline:none;scroll-snap-type:x mandatory;overscroll-behavior:contain">
+        <div style="flex:none;width:calc(50% - 54px)"></div>
+        <sc-for list="{{ thumbs }}" as="t" hint-placeholder-count="4">
+          <div data-thumb="" onClick="{{ t.onClick }}" style="height:96px;width:96px;flex:none;border-radius:8px;overflow:hidden;background:rgba(28,28,28,0.5);cursor:pointer;position:relative;scroll-snap-align:center;will-change:transform,opacity">
+            <div data-ring="" style="position:absolute;inset:0;border-radius:8px;border:1px solid #232323;pointer-events:none;z-index:2;transition:border-color 0.3s ease"></div>
+            {{ t.media }}
+          </div>
+        </sc-for>
+        <div style="flex:none;width:calc(50% - 54px)"></div>
+      </div>
+
+    </section>
+  </main>
+
+  <footer style="position:relative;z-index:1;height:48px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 32px;border-top:1px solid #232323;background:rgba(10,10,10,0.72);backdrop-filter:blur(14px);font-size:11px;color:#888888;letter-spacing:0.08em">
+    <span style="display:flex;gap:24px">
+      <a href="#">Instagram</a>
+      <a href="#">Contact</a>
+      <a href="#">Index</a>
+    </span>
+    <span style="display:flex;align-items:center;gap:10px">
+      <span style="width:5px;height:5px;border-radius:999px;background:#ce956d"></span>
+      {{ statusLine }}
+    </span>
+  </footer>
+</div>
+{{ loadingScreen }}
+{{ gateScreen }}
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;curationLine&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;Curated on article type, material, and restraint over logo.&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;statusSuffix&quot;:{&quot;editor&quot;:&quot;text&quot;,&quot;default&quot;:&quot;8 weeks of edit&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;accent&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#ce956d&quot;,&quot;options&quot;:[&quot;#ce956d&quot;,&quot;#560008&quot;,&quot;#f5f5f5&quot;],&quot;tsType&quot;:&quot;string&quot;}}">
+const EASE = "cubic-bezier(0.16,1,0.3,1)";
+// Photos render clean: full frame, no blur, no edge fade (stage/thumbnail
+// softening treatments removed on request).
+const WORDS = ["Curating", "Selecting", "Presenting"];
+
+class Component extends DCLogic {
+  state = { brands: [], base: "public/brands/", bi: 0, pi: 0, hover: -1, layers: [], failed: {}, ratios: {}, count: 0, word: 0, phase: "gate", gateGone: false };
+
+  railRef = React.createRef();
+  rackRef = React.createRef();
+  _lock = { rail: 0, rack: 0 };
+  _t = [];
+
+  // Callback refs: binding happens the moment the node exists and re-happens on
+  // any remount. (Binding from a timer was fragile — unmount cleared it.)
+  // The guard is keyed to THIS instance (the runtime can re-instantiate the
+  // logic class against the same DOM node) and the homed flag lives on the
+  // node, so both survive together. Old listeners are aborted on rebind.
+  attachRail = node => {
+    this.railRef.current = node;
+    if (!node || node._boundBy === this) return;
+    node._boundBy = this;
+    // A ResizeObserver fires once after real layout (and again on any resize),
+    // so the curve is never computed against a zero-height container.
+    this.bindScroll(node, "y");
+    this.observe(node, () => { this.paintRail(); this.home(); });
+  };
+  attachRack = node => {
+    this.rackRef.current = node;
+    if (!node || node._boundBy === this) return;
+    node._boundBy = this;
+    this.bindScroll(node, "x");
+    this.observe(node, () => { this.paintRack(); this.home(); });
+  };
+
+  observe(node, fn) {
+    if (typeof ResizeObserver === "function") {
+      const ro = new ResizeObserver(fn);
+      ro.observe(node);
+      (this._ro = this._ro || []).push(ro);
+    }
+    this._t.push(setTimeout(fn, 0));
+    this._t.push(setTimeout(fn, 200));
+  }
+
+  componentDidMount() {
+    this._t = this._t || [];
+    (window.__DC_BRANDS__ ? Promise.resolve(window.__DC_BRANDS__) : import("./brands-data.js").catch(() => ({ brands: [], IMAGE_BASE: "public/brands/" }))).then(m => {
+      const brands = (m.brands || []).filter(b => b.products && b.products.length);
+      this.setState({ brands, base: m.IMAGE_BASE || "public/brands/" }, () => {
+        this.pushLayer();
+        this._t.push(setTimeout(() => { this.centerRail(this.state.bi, false); this.paintRack(); }, 60));
+      });
+    }).catch(() => this.setState({ brands: [] }));
+
+    // The intro (words + counter) no longer runs on page load; it starts when
+    // the visitor chooses to enter - see startIntro().
+
+    this._key = e => {
+      const k = e.key;
+      if (k === "ArrowDown" || k === "ArrowUp") { e.preventDefault(); this.stepBrand(k === "ArrowDown" ? 1 : -1); }
+      if (k === "ArrowRight" || k === "ArrowLeft") { e.preventDefault(); this.stepProduct(k === "ArrowRight" ? 1 : -1); }
+    };
+    window.addEventListener("keydown", this._key);
+    this._up = () => {
+      if (this._drag && this.rackRef.current) {
+        this.setSnap(this.rackRef.current, "x mandatory");
+        this._lock.rack = 0;
+      }
+      this._drag = null;
+    };
+    this._move = e => {
+      if (!this._drag) return;
+      const el = this.rackRef.current;
+      el.scrollLeft = this._drag.left - (e.clientX - this._drag.x);
+      if (el._sync) el._sync();
+    };
+    window.addEventListener("mouseup", this._up);
+    window.addEventListener("mousemove", this._move);
+    this._resize = () => { this.paintRail(); this.paintRack(); this.centerRail(this.state.bi, false); this.centerRack(this.state.pi, false); };
+    window.addEventListener("resize", this._resize);
+  }
+
+  // Always repaint — no latch. A latched paint taken before layout settled was
+  // leaving the curve flat, and the rack's item count changes on brand switch.
+  componentDidUpdate() {
+    this.home();
+    this.paintRail();
+    this.paintRack();
+  }
+
+  // Content arrives after layout settles, and neither list changes BOX size
+  // when its items populate, so a ResizeObserver alone never fires again —
+  // homing has to be retried whenever the rendered content changes.
+  home() {
+    const rail = this.railRef.current, rack = this.rackRef.current;
+    if (rail && !rail._homed && rail.clientHeight && this.items(rail, "[data-row]").length) {
+      rail._homed = true;
+      this.centerRail(this.state.bi, false);
+    }
+    if (rack && !rack._homed && rack.clientWidth && this.items(rack, "[data-thumb]").length) {
+      rack._homed = true;
+      this.centerRack(this.state.pi, false);
+    }
+  }
+
+  componentWillUnmount() {
+    cancelAnimationFrame(this._raf);
+    clearInterval(this._words);
+    this._t.forEach(clearTimeout);
+    window.removeEventListener("keydown", this._key);
+    window.removeEventListener("mouseup", this._up);
+    window.removeEventListener("mousemove", this._move);
+    window.removeEventListener("resize", this._resize);
+    (this._ro || []).forEach(o => o.disconnect());
+  }
+
+  // ---- scroll-driven picker -------------------------------------------------
+  // Native scroll + snap stays in charge (that inertia is the point). We only
+  // (a) repaint the wheel-curve transforms, (b) read back which row is centered,
+  // and (c) add inertia for MOUSE WHEEL notches only — trackpad/touch already
+  // carry OS momentum, so we leave those events untouched.
+  bindScroll(el, axis) {
+    if (!el) return;
+    if (el._ac) el._ac.abort();
+    const ac = typeof AbortController === "function" ? new AbortController() : null;
+    el._ac = ac;
+    const sig = ac ? { signal: ac.signal } : {};
+    const vertical = axis === "y";
+    const pos = () => (vertical ? el.scrollTop : el.scrollLeft);
+    const setPos = v => { if (vertical) el.scrollTop = v; else el.scrollLeft = v; };
+    const max = () => (vertical ? el.scrollHeight - el.clientHeight : el.scrollWidth - el.clientWidth);
+    const paint = vertical ? () => this.paintRail() : () => this.paintRack();
+    const pick = vertical ? () => this.pickRail() : () => this.pickRack();
+
+    // Throttle on rAF, but never let a throttled/hidden frame wedge the picker:
+    // a timeout races the frame and whichever lands first clears the latch.
+    let sraf = 0, sto = 0;
+    const run = () => {
+      cancelAnimationFrame(sraf); clearTimeout(sto);
+      sraf = 0; sto = 0;
+      paint(); pick();
+    };
+    el.addEventListener("scroll", () => {
+      if (sraf || sto) return;
+      sraf = requestAnimationFrame(run);
+      sto = setTimeout(run, 80);
+    }, Object.assign({ passive: true }, sig));
+    // Offset writes (wheel inertia, drag) emit no scroll event here, so the
+    // code that moves the list calls this directly.
+    el._sync = run;
+
+    // Inertia termination must not depend on frames arriving OR on the diff
+    // threshold being reached: a wall-clock deadline and a no-movement check
+    // both force settle(), and the timeout fallback is armed by the wheel
+    // handler and never cleared inside step().
+    let target = null, araf = 0, ato = 0, deadline = 0, last = -1;
+    // skipPick: a programmatic settle must not re-derive selection from the
+    // position it is about to leave — that clobbered the user's fresh choice.
+    const settle = skipPick => {
+      cancelAnimationFrame(araf); clearTimeout(ato);
+      araf = 0; ato = 0; deadline = 0; last = -1;
+      if (target !== null) { setPos(target); target = null; }
+      this.setSnap(el, vertical ? "y mandatory" : "x mandatory");
+      paint();
+      if (skipPick !== true) pick();
+    };
+    el._settle = settle;
+    const step = () => {
+      araf = 0;
+      if (target === null) { settle(); return; }
+      const cur = pos();
+      const diff = target - cur;
+      const stalled = last >= 0 && Math.abs(cur - last) < 0.5;
+      last = cur;
+      if (Math.abs(diff) < 0.5 || stalled || performance.now() > deadline) { settle(); return; }
+      setPos(cur + diff * 0.17);
+      paint(); pick();
+      araf = requestAnimationFrame(step);
+    };
+    el.addEventListener("wheel", e => {
+      const raw = vertical ? e.deltaY : (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY);
+      // deltaMode 1 = lines, 2 = pages. We preventDefault, which suppresses the
+      // browser's own conversion, so convert to pixels ourselves or a Firefox/
+      // Windows notch (deltaY 3, mode 1) would move 3px instead of ~50.
+      const page = vertical ? el.clientHeight : el.clientWidth;
+      const d = e.deltaMode === 1 ? raw * 16 : e.deltaMode === 2 ? raw * page : raw;
+      // Mouse wheels arrive as coarse notches (line mode, or ~100px integer
+      // jumps). Trackpads stream small fractional deltas — those fall through
+      // to the browser so macOS momentum is never double-smoothed.
+      const notch = e.deltaMode !== 0 || (Math.abs(raw) >= 45 && Number.isInteger(raw));
+      if (!notch || !d) return;
+      e.preventDefault();
+      this.setSnap(el, "none");
+      const from = target === null ? pos() : target;
+      target = Math.max(0, Math.min(max(), from + d * 1.15));
+      deadline = performance.now() + 450;
+      last = -1;
+      clearTimeout(ato);
+      ato = setTimeout(settle, 550);
+      if (!araf) araf = requestAnimationFrame(step);
+    }, Object.assign({ passive: false }, sig));
+  }
+
+  items(el, sel) { return el ? Array.from(el.querySelectorAll(sel)) : []; }
+
+  // Template inline styles compile to generated rules that beat a plain inline
+  // write, so snap toggles must carry the important flag or mandatory snapping
+  // stays on and swallows every programmatic scroll.
+  setSnap(el, value) {
+    if (el) el.style.setProperty("scroll-snap-type", value, "important");
+  }
+
+  // All geometry via getBoundingClientRect: offsetTop/offsetLeft are relative to
+  // the nearest POSITIONED ancestor, which for the rack was <main>, not #rack —
+  // viewport rects have no such dependency on positioning context.
+  offsets(el, sel, vertical) {
+    const box = el.getBoundingClientRect();
+    const mid = vertical ? box.top + box.height / 2 : box.left + box.width / 2;
+    const half = (vertical ? box.height : box.width) / 2 || 1;
+    return this.items(el, sel).map(n => {
+      const b = n.getBoundingClientRect();
+      const c = vertical ? b.top + b.height / 2 : b.left + b.width / 2;
+      return { node: n, d: (c - mid) / half, px: c - mid };
+    });
+  }
+
+  paintRail() {
+    const el = this.railRef.current; if (!el || !el.clientHeight) return;
+    for (const { node, d } of this.offsets(el, "[data-row]", true)) {
+      const a = Math.min(Math.abs(d), 1);
+      node.style.transform = "translateY(" + (-d * 6).toFixed(2) + "px) scale(" + (1 - a * 0.26).toFixed(3) + ")";
+      node.style.opacity = (1 - a * 0.74).toFixed(3);
+    }
+  }
+
+  // The active border is written here, not through a template hole: this is the
+  // same node paintRack mutates each frame, and the hole lost that contest.
+  paintRack() {
+    const el = this.rackRef.current; if (!el || !el.clientWidth) return;
+    const gold = this.props.accent || "#ce956d";
+    this.offsets(el, "[data-thumb]", false).forEach(({ node, d }, i) => {
+      const a = Math.min(Math.abs(d), 1);
+      node.style.transform = "scale(" + (1.06 - a * 0.28).toFixed(3) + ")";
+      node.style.opacity = (1 - a * 0.6).toFixed(3);
+      const ring = node.querySelector("[data-ring]");
+      if (ring) ring.style.borderColor = i === this.state.pi ? gold : "#232323";
+    });
+  }
+
+  nearest(el, sel, vertical) {
+    const list = this.offsets(el, sel, vertical);
+    if (!list.length) return -1;
+    let best = 0, bd = Infinity;
+    list.forEach((o, i) => { const d = Math.abs(o.px); if (d < bd) { bd = d; best = i; } });
+    return best;
+  }
+
+  // Never commit a pick before the list has been homed: at scrollTop 0 with
+  // percentage spacers still unresolved, the "centered" row is arbitrary.
+  pickRail() {
+    const el = this.railRef.current;
+    if (!el || !el._homed || Date.now() < this._lock.rail) return;
+    const i = this.nearest(el, "[data-row]", true);
+    if (i < 0 || i === this.state.bi || !this.state.brands[i]) return;
+    this.setState({ bi: i, pi: 0 }, () => { this.pushLayer(); this.centerRack(0, false); });
+  }
+
+  pickRack() {
+    const el = this.rackRef.current;
+    if (!el || !el._homed || Date.now() < this._lock.rack) return;
+    const i = this.nearest(el, "[data-thumb]", false);
+    const b = this.brand();
+    if (i < 0 || i === this.state.pi || !b || !b.products[i]) return;
+    this.setState({ pi: i }, () => this.pushLayer());
+  }
+
+  // Mandatory snap re-snaps to the CURRENT snap point and swallows programmatic
+  // smooth scrolls, so suspend snapping for the duration of the animation.
+  // scrollTo({behavior:"smooth"}) is a no-op on these containers, so animate the
+  // scroll offset by hand — same deadline/timeout guards as the wheel inertia.
+  glide(el, axis, px, smooth, repaint) {
+    const vertical = axis === "y";
+    const mandatory = vertical ? "y mandatory" : "x mandatory";
+    const get = () => (vertical ? el.scrollTop : el.scrollLeft);
+    const set = v => { if (vertical) el.scrollTop = v; else el.scrollLeft = v; };
+    const max = (vertical ? el.scrollHeight - el.clientHeight : el.scrollWidth - el.clientWidth);
+    const from = get();
+    const to = Math.max(0, Math.min(max, from + px));
+
+    cancelAnimationFrame(el._graf); clearTimeout(el._gto);
+    this.setSnap(el, "none");
+
+    const done = () => {
+      cancelAnimationFrame(el._graf); clearTimeout(el._gto);
+      el._graf = 0; el._gto = 0;
+      set(to);
+      this.setSnap(el, mandatory);
+      repaint();
+    };
+    if (smooth === false || Math.abs(to - from) < 1) { done(); return; }
+
+    const t0 = performance.now(), dur = 420;
+    const tick = () => {
+      const p = Math.min(1, (performance.now() - t0) / dur);
+      const e = 1 - Math.pow(1 - p, 3);
+      set(from + (to - from) * e);
+      repaint();
+      if (p < 1) el._graf = requestAnimationFrame(tick); else done();
+    };
+    el._graf = requestAnimationFrame(tick);
+    el._gto = setTimeout(done, dur + 180);
+  }
+
+  // Lock BEFORE settling or gliding: both move the offset, and any pick during
+  // the move would resolve against a position the user did not choose.
+  centerRail(i, smooth) {
+    const el = this.railRef.current; if (!el || !el.clientHeight) return;
+    this._lock.rail = Date.now() + (smooth === false ? 200 : 900);
+    if (el._settle) el._settle(true);
+    const o = this.offsets(el, "[data-row]", true)[i];
+    if (!o) { this._lock.rail = 0; return; }
+    this.glide(el, "y", o.px, smooth, () => this.paintRail());
+  }
+
+  centerRack(i, smooth) {
+    const el = this.rackRef.current; if (!el || !el.clientWidth) return;
+    this._lock.rack = Date.now() + (smooth === false ? 200 : 900);
+    if (el._settle) el._settle(true);
+    const o = this.offsets(el, "[data-thumb]", false)[i];
+    if (!o) { this._lock.rack = 0; return; }
+    this.glide(el, "x", o.px, smooth, () => this.paintRack());
+  }
+
+  brand() { return this.state.brands[this.state.bi]; }
+  product() { const b = this.brand(); return b && b.products[Math.min(this.state.pi, b.products.length - 1)]; }
+  src(p) { return p ? this.state.base + p.image : null; }
+
+  pushLayer() {
+    const src = this.src(this.product());
+    if (!src) return;
+    this.setState(s => ({ layers: [...s.layers.map(l => ({ ...l, out: true })), { src, key: src + "#" + Date.now() }] }));
+    this._t.push(setTimeout(() => this.setState(s => ({ layers: s.layers.slice(-1) })), 700));
+  }
+
+  // Click and arrow keys drive the same scroll — selection still comes from
+  // whatever ends up centered, so no input path can desync from the rail.
+  setBrand(i) {
+    if (i === this.state.bi) { this.centerRail(i, true); return; }
+    this.setState({ bi: i, pi: 0 }, () => { this.pushLayer(); this.centerRail(i, true); this.centerRack(0, false); });
+  }
+  setProduct(i) {
+    if (i === this.state.pi) { this.centerRack(i, true); return; }
+    this.setState({ pi: i }, () => { this.pushLayer(); this.centerRack(i, true); });
+  }
+  stepBrand(d) {
+    const n = this.state.brands.length; if (!n) return;
+    this.setBrand((this.state.bi + d + n) % n);
+  }
+  stepProduct(d) {
+    const b = this.brand(); if (!b) return;
+    const n = b.products.length;
+    this.setProduct((this.state.pi + d + n) % n);
+  }
+
+  // Gate: the first screen. Choosing to enter dissolves it into the loading
+  // experience; the catalog reveals itself directly when loading finishes.
+  enterLoader() {
+    if (this.state.phase !== "gate") return;
+    this.setState({ phase: "loading", count: 0, word: 0 });
+    this._t.push(setTimeout(() => this.setState({ gateGone: true }), 700));
+    this.startIntro();
+  }
+
+  startIntro() {
+    const start = performance.now();
+    const tick = () => {
+      const p = Math.min(1, (performance.now() - start) / 3450);
+      this.setState({ count: Math.round(p * 100) });
+      if (p < 1) this._raf = requestAnimationFrame(tick);
+      else {
+        this._t.push(setTimeout(() => this.setState({ phase: "fading" }), 400));
+        this._t.push(setTimeout(() => this.setState({ phase: "done" }), 1200));
+      }
+    };
+    this._raf = requestAnimationFrame(tick);
+    // Safety net: if rAF is throttled (hidden/background tab) the loader must
+    // still clear, or the catalog sits behind it forever.
+    this._t.push(setTimeout(() => {
+      if (this.state.phase === "loading") {
+        this.setState({ count: 100 });
+        this._t.push(setTimeout(() => this.setState({ phase: "done" }), 600));
+      }
+    }, 6800));
+    this._words = setInterval(() => this.setState(s => ({ word: (s.word + 1) % WORDS.length })), 1100);
+    this._t.push(setTimeout(() => clearInterval(this._words), 3800));
+  }
+
+  media(src, fit, radius) {
+    if (!src || this.state.failed[src]) return React.createElement("div", { style: { width: "100%", height: "100%", background: "#2a2a2a", borderRadius: radius } });
+    return React.createElement("img", {
+      src, alt: "", draggable: false,
+      onLoad: e => {
+        const t = e.target, r = t.naturalWidth + " / " + t.naturalHeight;
+        if (!t.naturalWidth || this.state.ratios[src] === r) return;
+        this.setState(s => ({ ratios: { ...s.ratios, [src]: r } }));
+      },
+      onError: () => this.setState(s => ({ failed: { ...s.failed, [src]: true } })),
+      style: { width: "100%", height: "100%", objectFit: fit || "contain", objectPosition: "center top", display: "block" }
+    });
+  }
+
+  renderVals() {
+    const { brands, bi, pi, hover, phase, gateGone } = this.state;
+    const b = this.brand();
+    const gold = this.props.accent || "#ce956d";
+
+    const rows = brands.map((x, i) => ({
+      index: x.index, name: x.name, count: x.products.length,
+      bar: i === bi ? gold : "transparent",
+      ink: i === bi ? "#f5f5f5" : (i === hover ? "#cfcfcf" : "#888888"),
+      dim: i === bi || i === hover ? "#cfcfcf" : "#5c5c5c",
+      onClick: () => this.setBrand(i),
+      onEnter: () => this.setState({ hover: i }),
+      onLeave: () => this.setState({ hover: -1 })
+    }));
+
+    const thumbs = (b ? b.products : []).map((p, i) => ({
+      media: this.media(this.src(p), "cover", 8),
+      onClick: () => this.setProduct(i)
+    }));
+
+    // The vignette has to live on a box that IS the painted photo, not on the
+    // stage: with object-fit:contain the image can paint a fraction of the
+    // container's width, so a container-level mask fades empty letterbox.
+    // The wrapper takes the image's own aspect ratio once it loads, so the fade
+    // zone tracks the real edges at every ratio in the catalog (0.42 - 1.16).
+    const imageStack = React.createElement("div", { style: { position: "absolute", inset: 0 } },
+      this.state.layers.map(l => React.createElement("div", {
+        key: l.key,
+        style: {
+          position: "absolute", inset: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          animation: (l.out ? "dcOut 0.6s " + EASE + " forwards" : "dcIn 0.6s " + EASE + " both")
+        }
+      },
+        React.createElement("div", {
+          ref: node => { if (node) node.style.aspectRatio = (this.state.ratios[l.src] || ""); },
+          style: {
+            position: "relative", height: "100%", width: "auto",
+            maxWidth: "100%", maxHeight: "100%",
+            aspectRatio: this.state.ratios[l.src] || undefined
+          }
+        },
+          this.media(l.src, "contain")
+        )
+      ))
+    );
+
+    const loadingScreen = (phase === "loading" || phase === "fading") ? React.createElement("div", {
+      style: {
+        position: "fixed", inset: 0, background: "#0a0a0a", zIndex: 9999,
+        opacity: phase === "fading" ? 0 : 1, transition: "opacity 0.5s ease",
+        display: "flex", alignItems: "center", justifyContent: "center"
+      }
+    }, [
+      React.createElement("div", {
+        key: "w",
+        style: { fontFamily: "Anton, sans-serif", fontStyle: "italic", fontSize: "48px", letterSpacing: "0.02em", animation: "wordIn 0.3s " + EASE + " both" }
+      }, WORDS[this.state.word]),
+      React.createElement("div", {
+        key: "c",
+        style: { position: "absolute", right: "40px", bottom: "40px", fontFamily: "Anton, sans-serif", fontSize: "96px", fontVariantNumeric: "tabular-nums", lineHeight: 1, color: "#f5f5f5" }
+      }, String(this.state.count).padStart(3, "0")),
+      React.createElement("div", { key: "b", style: { position: "absolute", left: 0, right: 0, bottom: 0, height: "3px", background: "#141414" } },
+        React.createElement("div", { style: { height: "100%", width: this.state.count + "%", background: gold } }))
+    ]) : null;
+
+    const gateScreen = (phase === "gate" || (phase === "loading" && !gateGone)) ? React.createElement("div", {
+      key: "gate",
+      style: {
+        position: "fixed", inset: 0, background: "#0a0a0a", zIndex: 10000,
+        display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+        gap: "clamp(30px, 6vh, 60px)", padding: "0 32px", textAlign: "center",
+        animation: phase === "loading" ? "dcOut 0.6s " + EASE + " forwards" : undefined
+      }
+    }, [
+      React.createElement("h1", {
+        key: "hero",
+        style: {
+          margin: 0, fontFamily: "Anton, sans-serif", fontStyle: "italic",
+          fontSize: "clamp(23px, 3.1vw, 48px)", lineHeight: 1.24, letterSpacing: "0.02em",
+          color: "#f5f5f5", maxWidth: "min(900px, 88vw)",
+          animation: "wordIn 0.7s " + EASE + " both"
+        }
+      }, [
+        React.createElement("span", { key: "l1", style: { display: "block" } }, "Taste is an outcome of exposure."),
+        React.createElement("span", { key: "l2", style: { display: "block" } }, "Curation is an outcome of exclusion.")
+      ]),
+      React.createElement("button", {
+        key: "cta",
+        ref: node => { if (node) node.focus({ preventScroll: true }); },
+        onClick: () => this.enterLoader(),
+        onMouseEnter: e => { e.currentTarget.style.borderColor = gold; },
+        onMouseLeave: e => { e.currentTarget.style.borderColor = "#232323"; },
+        style: {
+          appearance: "none", WebkitAppearance: "none",
+          display: "flex", alignItems: "center", gap: "10px",
+          background: "rgba(20,20,20,0.86)", border: "1px solid #232323", borderRadius: "999px",
+          padding: "15px 28px", color: "#f5f5f5", cursor: "pointer",
+          fontFamily: "inherit", fontSize: "11px", fontWeight: 500,
+          letterSpacing: "0.18em", textTransform: "uppercase",
+          backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)",
+          animation: "wordIn 0.7s " + EASE + " 0.25s both",
+          transition: "border-color 0.3s ease"
+        }
+      }, [
+        React.createElement("span", { key: "d", style: { width: "6px", height: "6px", flex: "none", borderRadius: "999px", background: gold, animation: "pulse 2s ease-in-out infinite" } }),
+        React.createElement("span", { key: "t" }, "Start your experience"),
+        React.createElement("span", { key: "a", style: { fontSize: "15px", color: gold } }, "→")
+      ])
+    ]) : null;
+
+    return {
+      rows, thumbs, imageStack, loadingScreen, gateScreen,
+      isEmpty: brands.length === 0,
+      activeIndex: b ? b.index : "",
+      activeLabel: this.product() ? this.product().label : "",
+      curationLine: this.props.curationLine ?? "Curated on article type, material, and restraint over logo.",
+      statusLine: brands.length ? brands.length + " houses, " + (this.props.statusSuffix ?? "8 weeks of edit") : "awaiting /public/brands/",
+      rackRef: this.attachRack,
+      railRef: this.attachRail,
+      onDragStart: e => {
+        const el = this.rackRef.current; if (!el) return;
+        this.setSnap(el, "none");
+        this._drag = { x: e.clientX, left: el.scrollLeft };
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

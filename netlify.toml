@@ -1,0 +1,3 @@
+# Netlify — static site, no build step. Publish the repository root as-is.
+[build]
+  publish = "."

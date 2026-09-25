@@ -465,6 +465,7 @@ class Component extends DCLogic {
       const p = b.products[this.state.pi + d];
       if (p) this.prime(this.src(p));
     });
+    b.products.forEach(p => this.prime(this.src(p))); // whole brand into the HTTP cache
     [1, 2, -1].forEach(d => {
       const nb = this.state.brands[this.state.bi + d];
       if (nb && nb.products[0]) this.prime(this.src(nb.products[0]));
@@ -484,10 +485,18 @@ class Component extends DCLogic {
   warmCatalog() {
     if (this._warmed) return;
     this._warmed = true;
-    if (navigator.connection && navigator.connection.saveData) return;
+    const cn = navigator.connection;
+    if (cn && cn.saveData) return; // metered: don't warm
+    const fast = !cn || !cn.effectiveType || !/(^|-)2g$/.test(String(cn.effectiveType));
     const queue = [];
+    // 1) every brand cover, 2) every thumbnail — small, high-value.
     this.state.brands.forEach(b => { if (b.products[0]) queue.push(this.src(b.products[0])); });
     this.state.brands.forEach(b => b.products.forEach(p => queue.push(this.thumbSrc(p))));
+    // 3) on non-slow connections, the WHOLE stage set — from then on nothing
+    //    ever waits on the network again (files stay in the browser cache).
+    if (fast) {
+      this.state.brands.forEach(b => b.products.forEach(p => queue.push(this.src(p))));
+    }
     let i = 0;
     const step = () => {
       if (i >= queue.length) return;
